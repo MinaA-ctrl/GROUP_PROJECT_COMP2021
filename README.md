@@ -9,7 +9,9 @@
       -      loginId(existingUser)
       -       logout.
   - Class creation for rooms  [roomtypes, roomIDs (static)].
-  -  addRoom, modifyRoom, deleteRoom, listallRooms, and generate a random *unique* roomID.
+      - addRoom
+      - modifyRoom
+      - deleteRoom, listallRooms, and generate a random *unique* roomID.
   - Class creation for bookings (BookingId, schedule view, modifyBookings, deleteBooking, listBookings.
        - book roomId date startTime endTime purpose (create new booking), modifyBooking, deleteBooking, searchBooking, schedule.
        - Every booking should have - startTime, endTime, features, minCapacity,.

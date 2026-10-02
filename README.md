@@ -18,6 +18,11 @@
   - User Manual pdf.
   - Project Presentation Video (script, video). Week 11 - Script should be completed. Week 12
 
+# Responsibilities
+ - Mikel - Bookings
+ - Khalia - Users
+ - Amina - RoomTypes
+
 
 # By Week
   - Week 6 -

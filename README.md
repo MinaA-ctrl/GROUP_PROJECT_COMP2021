@@ -27,10 +27,16 @@
 
 
 # GROUND RULES FOR CHANGES (by the man himself Mikel)
- - Git add --> Git commit -m  --> git push
- - 
- 
+ "
+ - Let everyone know when you have made changes.
 
+   
+ - Git add --> Git commit -m  --> git push
+ - To make changes to the Github repo when you make changes on your computer.
+   
+ - git pull
+ - Pulling allows you to take the changes someone else has made to Github repo from their computer, and take the changes to your own computer. This makes everyone's repo updated."
+ 
 
 
 # By Week
@@ -38,3 +44,5 @@
   - Week 9-10 (of Hallo-weekend, 30th October - 6th November) - At least coding portion should be completed. 
   - Week 11 (of 13th November, Fri) - Project Presentation script should be completed. Final review session(s), and any remaining questions should be resolved by then.
   - Week 12 (of 20th November, Fri) - Project Presentation video should be ready to go.
+
+    

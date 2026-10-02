@@ -21,6 +21,6 @@
 
 # By Week
   - Week 6 -
-  - Week 9-10 - At least coding portion should be completed. 
-  - Week 11 - Project Presentation script should be completed. Final review session(s), and any remaining questions should be resolved by then.
-  - Week 12 - Project Presentation video should be ready to go.
+  - Week 9-10 (of Halloweekend, 30th October - 6th November) - At least coding portion should be completed. 
+  - Week 11 (of 13th November, Fri) - Project Presentation script should be completed. Final review session(s), and any remaining questions should be resolved by then.
+  - Week 12 (of 20th November, Fri) - Project Presentation video should be ready to go.

@@ -18,14 +18,23 @@
   - User Manual pdf.
   - Project Presentation Video (script, video). Week 11 - Script should be completed. Week 12
 
-# Responsibilities
+
+
+# RESPONSIBILITIES
  - Mikel - Bookings
  - Khalia - Users
  - Amina - RoomTypes
 
 
+# GROUND RULES FOR CHANGES (by the man himself Mikel)
+ - Git add --> Git commit -m  --> git push
+ - 
+ 
+
+
+
 # By Week
   - Week 6 -
-  - Week 9-10 (of Halloweekend, 30th October - 6th November) - At least coding portion should be completed. 
+  - Week 9-10 (of Hallo-weekend, 30th October - 6th November) - At least coding portion should be completed. 
   - Week 11 (of 13th November, Fri) - Project Presentation script should be completed. Final review session(s), and any remaining questions should be resolved by then.
   - Week 12 (of 20th November, Fri) - Project Presentation video should be ready to go.

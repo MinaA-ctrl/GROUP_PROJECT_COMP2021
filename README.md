@@ -3,8 +3,13 @@
 # Timeline/Chronology for tasks: 
 
   - Class creation for Users - super-admin, admin, and regular user.
-  - Class creation for rooms  [roomtypes, roomIDs (static)]
-  - Class creation for bookings (BookingId, schedule view, modifying bookings).
+      - addUser, removeUser, changeRole (targetUser newRole), loginId(existingUser), and logout.
+  - Class creation for rooms  [roomtypes, roomIDs (static)]. 
+     - addRoom, modifyRoom, deleteRoom, listallRooms, and generate a random *unique* roomID.
+  - Class creation for bookings (BookingId, schedule view, modifyBookings, deleteBooking, listBookings.
+       - book roomId date startTime endTime purpose (create new booking), modifyBooking, deleteBooking, searchBooking, schedule.
+       - Every booking should have - startTime, endTime, features, minCapacity,.
+       - scheduleView  --> should be able to list all active weekly booking sessions (weekStartDate), and regular users should only be able to see UserId if it is their booking. 
   - **Bonus Points** - 1) Creation of Graphical User Interface (GUI) for all commands and 2)Undo and Redo functions of all commands except: (login, logout, search, listRoom, listAllRooms, listBookings, and quit). 
 
 

@@ -1,32 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2aa31577-8e56-4d35-8f60-43cefa56a503" name="Changes" comment="" />
+    <list default="true" id="2aa31577-8e56-4d35-8f60-43cefa56a503" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/Room.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/RoomList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/CROBS.java" beforeDir="false" afterPath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/CROBS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/RoomType.java" beforeDir="false" afterPath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/RoomType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/UserType.java" beforeDir="false" afterPath="$PROJECT_DIR$/SampleProject/src/hk/edu/polyu/comp/comp2021/crobs/model/UserType.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0,
-  "fromUser": false
-}]]></component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3K7LltPkk4lvmaCwxSqeQR8azoD" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/aminabeiganova/Documents/PolyU/Year 2/Semester_2-1/COMP2021/GroupProject-1",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;room-type-project&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/aminabeiganova/Programming projects/Java/COMP2021/GroupProject_COMP2021&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="hk.edu.polyu.comp.comp2021.crobs.model.Main" />
+      <module name="GroupProject-1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="hk.edu.polyu.comp.comp2021.crobs.model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

@@ -23,7 +23,9 @@ BookingManager bookings = new BookingManager(
         session::isCurrentUserAdmin);
 ```
 
-These session and room method names are proposals, not existing implementations.
+`RoomList.containsRoom` is now implemented. The session method names remain
+proposals until the user manager is connected. `CROBS` now accepts the room
+collection and live session callbacks and creates the booking manager itself.
 All callbacks must read current state rather than capturing a fixed login or role.
 The existing two-argument constructor remains usable, but grants no admin access.
 
@@ -78,5 +80,6 @@ The latter covers schedule boundaries and privacy, availability, deletion cutoff
 behavior, and authorization of cancellation hooks. Final verification should use
 the assignment's Java 25 SDK and language level 8.
 
-CLI wiring, HTML/TXT command logs, and full application testing remain separate
-integration tasks. The room and user placeholders have not been implemented here.
+The CLI and HTML/TXT logging are now wired, including room commands and search.
+The room implementation is integrated through `CROBS`. User/session management
+and its CLI commands remain pending; the default application cannot log in yet.

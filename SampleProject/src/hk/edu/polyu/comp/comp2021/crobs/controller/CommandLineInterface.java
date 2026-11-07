@@ -3,6 +3,8 @@ package hk.edu.polyu.comp.comp2021.crobs.controller;
 import hk.edu.polyu.comp.comp2021.crobs.logging.OperationLogger;
 import hk.edu.polyu.comp.comp2021.crobs.model.Booking;
 import hk.edu.polyu.comp.comp2021.crobs.model.BookingManager;
+import hk.edu.polyu.comp.comp2021.crobs.model.CROBS;
+import hk.edu.polyu.comp.comp2021.crobs.model.Room;
 import hk.edu.polyu.comp.comp2021.crobs.model.ScheduleEntry;
 
 import java.io.BufferedReader;
@@ -11,17 +13,20 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
+import java.time.DateTimeException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** Reads commands, records each line, and dispatches booking operations. */
+/** Reads commands, records each line, and dispatches room and booking operations. */
 public final class CommandLineInterface {
 
     private final BookingManager bookings;
+    private final CROBS crobs;
 
-    public CommandLineInterface(BookingManager bookings) {
-        this.bookings = Objects.requireNonNull(bookings, "bookings");
+    public CommandLineInterface(CROBS crobs) {
+        this.crobs = Objects.requireNonNull(crobs, "crobs");
+        this.bookings = crobs.getBookingManager();
     }
 
     /**
@@ -48,7 +53,7 @@ public final class CommandLineInterface {
                 if (!execute(rawLine, output)) {
                     return;
                 }
-            } catch (DateTimeParseException invalidDateOrTime) {
+            } catch (DateTimeException invalidDateOrTime) {
                 output.println("Error: use YYYY-MM-DD for dates and HH:mm for times.");
             } catch (IllegalArgumentException | IllegalStateException rejectedCommand) {
                 output.println("Error: " + rejectedCommand.getMessage());
@@ -99,10 +104,66 @@ public final class CommandLineInterface {
                 printSchedule(args[1], LocalDate.parse(args[2]), output);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown command: " + command);
+                executeRoomCommand(command, line, output);
         }
         output.flush();
         return true;
+    }
+
+    private void executeRoomCommand(String command, String line, PrintWriter output) {
+        String[] args = line.split("\\s+");
+        switch (command) {
+            case "addRoom":
+                requireArguments(args, 4, "addRoom roomType capacity features");
+                Room added = crobs.addRoom(args[1], parseInteger(args[2], "Capacity"), args[3]);
+                output.println("Room created: " + added.getRoomID());
+                break;
+            case "modifyRoom":
+                requireArguments(args, 4, "modifyRoom roomID field newValue");
+                Room modified = crobs.modifyRoom(args[1], args[2], args[3]);
+                output.println("Room modified: " + modified.getRoomID());
+                break;
+            case "deleteRoom":
+                requireArguments(args, 2, "deleteRoom roomID");
+                crobs.deleteRoom(args[1]);
+                output.println("Room deleted: " + args[1]);
+                break;
+            case "listRoom":
+                requireArguments(args, 2, "listRoom roomID");
+                printRooms(Collections.singletonList(crobs.listRoom(args[1])), output);
+                break;
+            case "listAllRooms":
+                requireArguments(args, 1, "listAllRooms");
+                printRooms(crobs.listAllRooms(), output);
+                break;
+            case "search":
+                requireArguments(args, 6, "search date startTime endTime minCapacity features");
+                printRooms(crobs.search(LocalDate.parse(args[1]), LocalTime.parse(args[2]),
+                        LocalTime.parse(args[3]), parseInteger(args[4], "Minimum capacity"), args[5]), output);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown command: " + command);
+        }
+    }
+
+    private static int parseInteger(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException invalidNumber) {
+            throw new IllegalArgumentException(label + " must be an integer");
+        }
+    }
+
+    private static void printRooms(List<Room> rooms, PrintWriter output) {
+        if (rooms.isEmpty()) {
+            output.println("No rooms found.");
+            return;
+        }
+        output.println("Room ID\tRoom type\tCapacity\tFeatures");
+        for (Room room : rooms) {
+            output.println(room.getRoomID() + "\t" + room.getRoomType() + "\t"
+                    + room.getCapacity() + "\t" + String.join(",", room.getFeatures()));
+        }
     }
 
     private void printBookings(PrintWriter output) {

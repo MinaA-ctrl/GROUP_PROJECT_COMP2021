@@ -30,7 +30,7 @@ public final class Application {
             LogFileOptions options = LogFileOptions.parse(args);
             CROBS crobs = new CROBS();
             try (OperationLogger logger = new OperationLogger(options.getHtmlPath(), options.getTextPath())) {
-                new CommandLineInterface(crobs.getBookingManager()).run(input, output, logger);
+                new CommandLineInterface(crobs).run(input, output, logger);
             }
             return 0;
         } catch (IllegalArgumentException invalidOptions) {

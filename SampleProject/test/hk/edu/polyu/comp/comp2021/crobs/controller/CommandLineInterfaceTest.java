@@ -100,7 +100,7 @@ class CommandLineInterfaceTest {
         Path directory = Files.createTempDirectory("crobs-cli-log-failure-");
         OperationLogger logger = new OperationLogger(directory.resolve("log.html"), directory.resolve("log.txt"));
         logger.close();
-        assertThrows(IOException.class, () -> new CommandLineInterface(bookings).run(
+        assertThrows(IOException.class, () -> new CommandLineInterface(crobs).run(
                 new StringReader("book " + roomId + " 2026-11-10 09:00 10:00 Meeting\n"),
                 new PrintWriter(new StringWriter()), logger));
         assertTrue(bookings.listBookings().isEmpty());
@@ -109,7 +109,7 @@ class CommandLineInterfaceTest {
     private String run(String commands, Path directory) throws IOException {
         StringWriter output = new StringWriter();
         try (OperationLogger logger = new OperationLogger(directory.resolve("log.html"), directory.resolve("log.txt"))) {
-            new CommandLineInterface(bookings).run(new StringReader(commands), new PrintWriter(output), logger);
+            new CommandLineInterface(crobs).run(new StringReader(commands), new PrintWriter(output), logger);
         }
         return output.toString();
     }

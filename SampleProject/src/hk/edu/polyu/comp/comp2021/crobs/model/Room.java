@@ -14,8 +14,11 @@ public class Room {
 
     Room(int capacity, RoomType type, String features){
         this.capacity = checkCapacity(capacity);
+        if (type == null) {
+            throw new IllegalArgumentException("Room type is required");
+        }
         this.roomType = type;
-        this.features = assignFeatures(features);
+        this.features = parseFeatures(features);
         this.roomID = generateRoomID(type); // last, so a bad room doesn't use up an ID
     }
 
@@ -23,18 +26,45 @@ public class Room {
 
     public RoomType getRoomType() { return roomType; }
 
-    public ArrayList<String> getFeatures() { return features; }
+    public ArrayList<String> getFeatures() { return new ArrayList<>(features); }
 
     public String getRoomID() { return roomID; }
 
-    private ArrayList<String> assignFeatures(String str){ //separated by comma
+    /** Updates one room field, preserving the original room ID. */
+    void modifyField(String field, String newValue) {
+        if (newValue == null) {
+            throw new IllegalArgumentException("A new value is required");
+        }
+        switch (field) {
+            case "capacity":
+                capacity = checkCapacity(Integer.parseInt(newValue));
+                break;
+            case "roomType":
+                roomType = RoomType.fromString(newValue);
+                break;
+            case "features":
+                features = parseFeatures(newValue);
+                break;
+            default:
+                throw new IllegalArgumentException("Editable room fields: roomType, capacity, features");
+        }
+    }
+
+    /** Uses '-' or an empty string for no features; feature names are case-sensitive. */
+    static ArrayList<String> parseFeatures(String str) {
         ArrayList<String> list = new ArrayList<String>();
-        if (str == null) {
+        if (str == null || str.isEmpty() || "-".equals(str)) {
             return list;
         }
-        String[] arr = str.split(",");
+        if (str.chars().anyMatch(Character::isWhitespace)) {
+            throw new IllegalArgumentException("Separate features with commas and no spaces");
+        }
+        String[] arr = str.split(",", -1);
         for (String f : arr) {
-            if (!f.isEmpty() && !list.contains(f)) {
+            if (f.isEmpty()) {
+                throw new IllegalArgumentException("Feature names must not be empty");
+            }
+            if (!list.contains(f)) {
                 list.add(f);
             }
         }

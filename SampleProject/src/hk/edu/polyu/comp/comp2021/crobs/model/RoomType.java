@@ -31,7 +31,6 @@ public enum RoomType {
     @Override
     public String toString() { return commandName; }
 
-    // adds 1 to the counter of this room type and returns the new value
     public static int incrementRoomTypeCount(RoomType r){
         roomIdCount[r.getIndex()] += 1;
         return roomIdCount[r.getIndex()];
@@ -40,5 +39,8 @@ public enum RoomType {
     // puts all counters back to the start, used in unit tests
     static void resetRoomTypeCount(){
         roomIdCount = new int[]{-1, -1, -1, -1};
+    }
+    public void deleteRoomID(){
+        roomIdCount[this.getIndex()] -= 1;
     }
 }

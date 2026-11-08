@@ -50,7 +50,7 @@ public class Room {
         }
     }
 
-    /** Uses '-' or an empty string for no features; feature names are case-sensitive. */
+    // Uses '-' or an empty string for no features; feature names are case-sensitive.
     static ArrayList<String> parseFeatures(String str) {
         ArrayList<String> list = new ArrayList<String>();
         if (str == null || str.isEmpty() || "-".equals(str)) {

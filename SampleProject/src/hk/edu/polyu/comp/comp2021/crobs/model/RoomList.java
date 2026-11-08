@@ -24,6 +24,7 @@ public class RoomList{
     public Room deleteRoom(String roomID){
         Room room = getRoom(roomID);
         rooms.remove(room);
+        room.getRoomType().deleteRoomID(); //to delete now free space of the id
         return room;
     }
 

@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -132,6 +133,26 @@ class RoomCommandsTest {
         assertFalse(bookings.listBookings().stream().anyMatch(booking -> "Future".equals(booking.getPurpose())));
         assertThrows(IllegalArgumentException.class, () -> bookings.book(removed.getRoomID(), date.plusDays(1),
                 LocalTime.of(9, 0), LocalTime.of(10, 0), "Deleted room"));
+    }
+
+    @Test
+    void deletingAnEarlierRoomDoesNotReuseExistingOrDeletedIds() {
+        Room first = crobs.addRoom("seminarRoom", 20, "projector");
+        Room second = crobs.addRoom("seminarRoom", 20, "projector");
+        crobs.deleteRoom(first.getRoomID());
+        Room replacement = crobs.addRoom("seminarRoom", 20, "projector");
+        assertNotEquals(first.getRoomID(), replacement.getRoomID());
+        assertNotEquals(second.getRoomID(), replacement.getRoomID());
+    }
+
+    @Test
+    void deletingARoomAfterTypeChangeDoesNotReuseIdsOfTheNewType() {
+        Room changed = crobs.addRoom("seminarRoom", 20, "projector");
+        Room existingLab = crobs.addRoom("computerLab", 20, "computers");
+        crobs.modifyRoom(changed.getRoomID(), "roomType", "computerLab");
+        crobs.deleteRoom(changed.getRoomID());
+        Room newLab = crobs.addRoom("computerLab", 20, "computers");
+        assertNotEquals(existingLab.getRoomID(), newLab.getRoomID());
     }
 
     @Test

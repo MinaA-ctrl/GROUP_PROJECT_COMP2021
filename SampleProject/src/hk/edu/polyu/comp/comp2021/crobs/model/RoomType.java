@@ -31,7 +31,7 @@ public enum RoomType {
     @Override
     public String toString() { return commandName; }
 
-    // adds 1 to the counter of this room type and returns the new value
+    // IDs are not reused when rooms are deleted.
     public static int incrementRoomTypeCount(RoomType r){
         roomIdCount[r.getIndex()] += 1;
         return roomIdCount[r.getIndex()];

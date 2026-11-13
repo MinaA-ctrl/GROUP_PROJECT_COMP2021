@@ -24,7 +24,7 @@ public final class Application {
         }
     }
 
-    /** Runs a session without closing the supplied console streams. */
+    /** The big run of a CROBS session without closing the supplied console streams. */
     public static int run(String[] args, Reader input, PrintWriter output, PrintWriter errors) {
         try {
             LogFileOptions options = LogFileOptions.parse(args);

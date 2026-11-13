@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/** Owns the account records and active login for one Crobs session. */
+/** The user manager is responsible for the account records and active login for one CROBS session. */
 final class UserManager {
 
     static final String SUPERADMIN_ID = "sd00000000";

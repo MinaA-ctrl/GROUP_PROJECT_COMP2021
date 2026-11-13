@@ -15,7 +15,7 @@ public class CROBS {
     private final UserManager users = new UserManager();
     private final Clock clock;
 
-    /** Starts with one superadmin account and no active login. */
+    /** CROBS starts with one superadmin account and no active login. */
     public CROBS() {
         this(new RoomList(), Clock.systemDefaultZone());
     }
@@ -65,7 +65,7 @@ public class CROBS {
         return rooms.modifyRoom(roomId, field, newValue);
     }
 
-    /** Validates permission and the room before cancelling future bookings. */
+    /** Deleting validates permission and the room before cancelling future bookings. */
     public void deleteRoom(String roomId) {
         requireAdmin();
         rooms.getRoom(roomId);
@@ -83,7 +83,7 @@ public class CROBS {
         return rooms.getAllRooms();
     }
 
-    /** Combines capacity, all requested features, and booking availability (REQ13). */
+    /** Here, it combines capacity, all requested features, and booking availability (REQ13). */
     public List<Room> search(LocalDate date, LocalTime start, LocalTime end,
                              int minCapacity, String features) {
         requireLogin();

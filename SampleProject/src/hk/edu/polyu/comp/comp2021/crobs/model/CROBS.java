@@ -7,40 +7,52 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 public class CROBS {
 
     private final RoomList rooms;
     private final BookingManager bookings;
-    private final Supplier<String> currentUserId;
-    private final BooleanSupplier currentUserIsAdmin;
+    private final UserManager users = new UserManager();
     private final Clock clock;
 
-    /** Starts with no logged-in user until the real user manager is connected. */
+    /** Starts with one superadmin account and no active login. */
     public CROBS() {
-        this(new RoomList(), () -> null, () -> false);
+        this(new RoomList(), Clock.systemDefaultZone());
     }
 
-    /** Connects one room collection and the live user session to bookings. */
-    public CROBS(RoomList rooms, Supplier<String> currentUserId,
-                 BooleanSupplier currentUserIsAdmin) {
-        this(rooms, currentUserId, currentUserIsAdmin, Clock.systemDefaultZone());
-    }
-
-    /** Clock injection keeps room-deletion cutoff behavior reproducible in tests. */
-    public CROBS(RoomList rooms, Supplier<String> currentUserId,
-                 BooleanSupplier currentUserIsAdmin, Clock clock) {
+    /** The clock controls the cutoff for cancelling future bookings. */
+    CROBS(RoomList rooms, Clock clock) {
         this.rooms = Objects.requireNonNull(rooms, "rooms");
-        this.currentUserId = Objects.requireNonNull(currentUserId, "currentUserId");
-        this.currentUserIsAdmin = Objects.requireNonNull(currentUserIsAdmin, "currentUserIsAdmin");
         this.clock = Objects.requireNonNull(clock, "clock");
-        bookings = new BookingManager(currentUserId, rooms::containsRoom, currentUserIsAdmin);
+        bookings = new BookingManager(users::getCurrentUserId, rooms::containsRoom, users::isCurrentUserAdmin);
     }
 
     public BookingManager getBookingManager() {
         return bookings;
+    }
+
+    public String getSuperadminId() {
+        return UserManager.SUPERADMIN_ID;
+    }
+
+    public User addUser(String name) {
+        return users.addUser(name);
+    }
+
+    public void removeUser(String userId) {
+        users.removeUser(userId, bookings::cancelBookingsForUser);
+    }
+
+    public User changeRole(String userId, String newRole) {
+        return users.changeRole(userId, newRole);
+    }
+
+    public User login(String userId) {
+        return users.login(userId);
+    }
+
+    public void logout() {
+        users.logout();
     }
 
     public Room addRoom(String roomType, int capacity, String features) {
@@ -97,15 +109,14 @@ public class CROBS {
     }
 
     private void requireLogin() {
-        String userId = currentUserId.get();
-        if (userId == null || userId.trim().isEmpty()) {
+        if (users.getCurrentUserId() == null) {
             throw new IllegalStateException("Log in before managing rooms");
         }
     }
 
     private void requireAdmin() {
         requireLogin();
-        if (!currentUserIsAdmin.getAsBoolean()) {
+        if (!users.isCurrentUserAdmin()) {
             throw new IllegalStateException("Admin privileges are required");
         }
     }

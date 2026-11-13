@@ -9,8 +9,6 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,11 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RoomCommandsTest {
 
     private final RoomList rooms = new RoomList();
-    private final AtomicReference<String> user = new AtomicReference<>("U1");
-    private final AtomicBoolean admin = new AtomicBoolean(true);
     private final LocalDate date = LocalDate.of(2026, 11, 7);
-    private final CROBS crobs = new CROBS(rooms, user::get, admin::get,
+    private final CROBS crobs = new CROBS(rooms,
             Clock.fixed(Instant.parse("2026-11-07T10:00:00Z"), ZoneOffset.UTC));
+    private final String regularId;
+
+    RoomCommandsTest() {
+        crobs.login(crobs.getSuperadminId());
+        regularId = crobs.addUser("Regular user").getUserId();
+    }
 
     @Test
     void createsAndModifiesRoomsWithoutChangingIdentity() {
@@ -73,7 +75,7 @@ class RoomCommandsTest {
     @Test
     void regularUsersCanReadButCannotChangeRoomsAndLogoutIsEnforced() {
         Room room = crobs.addRoom("meetingRoom", 20, "board");
-        admin.set(false);
+        crobs.login(regularId);
         assertEquals(room.getRoomID(), crobs.listRoom(room.getRoomID()).getRoomID());
         assertEquals(1, crobs.listAllRooms().size());
         assertThrows(IllegalStateException.class, () -> crobs.addRoom("meetingRoom", 10, "board"));
@@ -81,8 +83,7 @@ class RoomCommandsTest {
         assertThrows(IllegalStateException.class, () -> crobs.deleteRoom(room.getRoomID()));
         assertEquals(20, room.getCapacity());
         assertEquals(1, crobs.search(date, LocalTime.of(9, 0), LocalTime.of(10, 0), 0, "board").size());
-        user.set(null);
-        admin.set(true);
+        crobs.logout();
         assertThrows(IllegalStateException.class, crobs::listAllRooms);
         assertThrows(IllegalStateException.class, () -> crobs.listRoom(room.getRoomID()));
         assertThrows(IllegalStateException.class, () -> crobs.addRoom("meetingRoom", 10, "board"));
@@ -120,10 +121,10 @@ class RoomCommandsTest {
         bookings.book(removed.getRoomID(), date, LocalTime.of(9, 0), LocalTime.of(11, 0), "Ongoing");
         bookings.book(removed.getRoomID(), date, LocalTime.of(11, 0), LocalTime.NOON, "Future");
         bookings.book(retained.getRoomID(), date, LocalTime.of(11, 0), LocalTime.NOON, "Other room");
-        admin.set(false);
+        crobs.login(regularId);
         assertThrows(IllegalStateException.class, () -> crobs.deleteRoom(removed.getRoomID()));
+        crobs.login(crobs.getSuperadminId());
         assertEquals(4, bookings.listBookings().size());
-        admin.set(true);
         assertThrows(IllegalArgumentException.class, () -> crobs.deleteRoom("missing"));
         assertEquals(4, bookings.listBookings().size());
         crobs.deleteRoom(removed.getRoomID());

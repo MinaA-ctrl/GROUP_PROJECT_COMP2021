@@ -3,8 +3,6 @@ package hk.edu.polyu.comp.comp2021.crobs.controller;
 import hk.edu.polyu.comp.comp2021.crobs.logging.OperationLogger;
 import hk.edu.polyu.comp.comp2021.crobs.model.CROBS;
 import hk.edu.polyu.comp.comp2021.crobs.model.Room;
-import hk.edu.polyu.comp.comp2021.crobs.model.RoomList;
-import hk.edu.polyu.comp.comp2021.crobs.model.RoomType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,10 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RoomCommandInterfaceTest {
 
-    private final RoomList rooms = new RoomList();
-    private final Room room = rooms.addRoom(20, RoomType.MEETING_ROOM, "board");
-    private final AtomicBoolean admin = new AtomicBoolean(true);
-    private final CROBS crobs = new CROBS(rooms, () -> "U1", admin::get);
+    private final CROBS crobs = new CROBS();
+    private final Room room;
+
+    RoomCommandInterfaceTest() {
+        crobs.login(crobs.getSuperadminId());
+        room = crobs.addRoom("meetingRoom", 20, "board");
+    }
 
     @Test
     void executesRoomCommandsAndRecordsThemOnce() throws IOException {
@@ -43,7 +43,7 @@ class RoomCommandInterfaceTest {
         assertTrue(output.contains("meetingRoom\t40\tboard"));
         assertTrue(output.contains("Room deleted: " + room.getRoomID()));
         assertEquals(1, crobs.listAllRooms().size());
-        assertFalse(rooms.containsRoom(room.getRoomID()));
+        assertFalse(crobs.listAllRooms().stream().anyMatch(item -> item.getRoomID().equals(room.getRoomID())));
         assertEquals(7, Files.readAllLines(directory.resolve("log.txt"), StandardCharsets.UTF_8).size());
     }
 
@@ -60,7 +60,7 @@ class RoomCommandInterfaceTest {
 
     @Test
     void rejectsUnauthorizedAndMalformedRoomCommandsThenContinues() throws IOException {
-        admin.set(false);
+        crobs.login(crobs.addUser("Regular user").getUserId());
         String output = run("addRoom meetingRoom 10 board\n"
                 + "modifyRoom " + room.getRoomID() + " capacity 30\n"
                 + "deleteRoom " + room.getRoomID() + "\n"

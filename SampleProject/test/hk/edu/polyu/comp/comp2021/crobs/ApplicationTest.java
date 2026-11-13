@@ -34,6 +34,31 @@ class ApplicationTest {
     }
 
     @Test
+    void userCommandsWorkInTheDefaultApplicationAndAreLogged() throws IOException {
+        Path directory = Files.createTempDirectory("crobs-app-users-");
+        Path html = directory.resolve("session.html");
+        Path text = directory.resolve("session.txt");
+        String[] commands = {"login sd00000000", "addUser Alex Chan",
+                "changeRole rg00000000 admin", "logout", "login rg00000000",
+                "addRoom meetingRoom 20 projector", "listAllRooms", "login sd00000000",
+                "changeRole rg00000000 regular", "removeUser rg00000000",
+                "login rg00000000", "quit"};
+        StringWriter output = new StringWriter();
+        StringWriter errors = new StringWriter();
+        assertEquals(0, Application.run(new String[]{"-html", html.toString(), "-txt", text.toString()},
+                new StringReader(String.join("\n", commands)), new PrintWriter(output), new PrintWriter(errors)));
+        assertEquals("", errors.toString());
+        assertTrue(output.toString().contains("Superadmin user ID: sd00000000"));
+        assertTrue(output.toString().contains("Logged in: rg00000000 (admin)"));
+        assertTrue(output.toString().contains("meetingRoom\t20\tprojector"));
+        assertTrue(output.toString().contains("User removed: rg00000000"));
+        assertTrue(output.toString().contains("Error: Unknown user ID: rg00000000"));
+        assertEquals(Arrays.asList(commands), Files.readAllLines(text, StandardCharsets.UTF_8));
+        String htmlLog = new String(Files.readAllBytes(html), StandardCharsets.UTF_8);
+        assertTrue(htmlLog.contains("<td>12</td><td>quit</td>"));
+    }
+
+    @Test
     void endOfInputClosesLogsWithoutQuit() throws IOException {
         Path directory = Files.createTempDirectory("crobs-app-eof-");
         Path html = directory.resolve("session.html");

@@ -3,8 +3,6 @@ package hk.edu.polyu.comp.comp2021.crobs.controller;
 import hk.edu.polyu.comp.comp2021.crobs.logging.OperationLogger;
 import hk.edu.polyu.comp.comp2021.crobs.model.BookingManager;
 import hk.edu.polyu.comp.comp2021.crobs.model.CROBS;
-import hk.edu.polyu.comp.comp2021.crobs.model.RoomList;
-import hk.edu.polyu.comp.comp2021.crobs.model.RoomType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,8 +15,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,12 +23,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandLineInterfaceTest {
 
-    private final RoomList rooms = new RoomList();
-    private final String roomId = rooms.addRoom(20, RoomType.MEETING_ROOM, "projector").getRoomID();
-    private final AtomicReference<String> currentUser = new AtomicReference<>("U1");
-    private final AtomicBoolean admin = new AtomicBoolean(false);
-    private final CROBS crobs = new CROBS(rooms, currentUser::get, admin::get);
+    private final CROBS crobs = new CROBS();
+    private final String roomId;
+    private final String ownerId;
+    private final String otherUserId;
     private final BookingManager bookings = crobs.getBookingManager();
+
+    CommandLineInterfaceTest() {
+        crobs.login(crobs.getSuperadminId());
+        roomId = crobs.addRoom("meetingRoom", 20, "projector").getRoomID();
+        ownerId = crobs.addUser("Owner").getUserId();
+        otherUserId = crobs.addUser("Other user").getUserId();
+        crobs.login(ownerId);
+    }
 
     @Test
     void executesBookingLifecycleAndLogsEachRawCommandOnce() throws IOException {
@@ -74,24 +77,24 @@ class CommandLineInterfaceTest {
     @Test
     void schedulePrintsOnlyOwnerIdsPermittedByLiveSession() throws IOException {
         bookings.book(roomId, LocalDate.of(2026, 11, 10), LocalTime.of(9, 0), LocalTime.of(10, 0), "Meeting");
-        currentUser.set("U2");
+        crobs.login(otherUserId);
         String commands = "schedule " + roomId + " 2026-11-10\nquit\n";
         String regularOutput = run(commands, Files.createTempDirectory("crobs-cli-private-"));
         assertTrue(regularOutput.contains("hidden"));
-        assertFalse(regularOutput.contains("U1"));
-        admin.set(true);
+        assertFalse(regularOutput.contains(ownerId));
+        crobs.login(crobs.getSuperadminId());
         String adminOutput = run(commands, Files.createTempDirectory("crobs-cli-admin-"));
-        assertTrue(adminOutput.contains("U1"));
+        assertTrue(adminOutput.contains(ownerId));
     }
 
     @Test
     void loggedOutSessionCannotCreateBookingsButCanQuit() throws IOException {
-        currentUser.set(null);
+        crobs.logout();
         Path directory = Files.createTempDirectory("crobs-cli-loggedout-");
         String output = run("book " + roomId + " 2026-11-10 09:00 10:00 Meeting\nquit\n", directory);
         assertTrue(output.contains("Log in before managing bookings"));
         assertTrue(output.contains("Goodbye."));
-        currentUser.set("U1");
+        crobs.login(ownerId);
         assertTrue(bookings.listBookings().isEmpty());
     }
 

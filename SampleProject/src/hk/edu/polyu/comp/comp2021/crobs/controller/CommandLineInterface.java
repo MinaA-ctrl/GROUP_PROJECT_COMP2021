@@ -6,6 +6,7 @@ import hk.edu.polyu.comp.comp2021.crobs.model.BookingManager;
 import hk.edu.polyu.comp.comp2021.crobs.model.CROBS;
 import hk.edu.polyu.comp.comp2021.crobs.model.Room;
 import hk.edu.polyu.comp.comp2021.crobs.model.ScheduleEntry;
+import hk.edu.polyu.comp.comp2021.crobs.model.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** Reads commands, records each line, and dispatches room and booking operations. */
+/** Reads and logs commands and dispatches operations to the model. */
 public final class CommandLineInterface {
 
     private final BookingManager bookings;
@@ -41,6 +42,7 @@ public final class CommandLineInterface {
         BufferedReader reader = input instanceof BufferedReader
                 ? (BufferedReader) input : new BufferedReader(input);
         output.println("Crobs. Type quit to exit.");
+        output.println("Superadmin user ID: " + crobs.getSuperadminId());
         while (true) {
             output.print("crobs> ");
             output.flush();
@@ -69,6 +71,34 @@ public final class CommandLineInterface {
         String command = line.split("\\s+", 2)[0];
         String[] args;
         switch (command) {
+            case "addUser":
+                args = line.split("\\s+", 2);
+                requireArguments(args, 2, "addUser name");
+                output.println("User created: " + crobs.addUser(args[1]).getUserId());
+                break;
+            case "removeUser":
+                args = line.split("\\s+");
+                requireArguments(args, 2, "removeUser targetUserID");
+                crobs.removeUser(args[1]);
+                output.println("User removed: " + args[1]);
+                break;
+            case "changeRole":
+                args = line.split("\\s+");
+                requireArguments(args, 3, "changeRole targetUserId newRole");
+                User changed = crobs.changeRole(args[1], args[2]);
+                output.println("Role changed: " + changed.getUserId() + " (" + changed.getRole() + ")");
+                break;
+            case "login":
+                args = line.split("\\s+");
+                requireArguments(args, 2, "login userID");
+                User loggedIn = crobs.login(args[1]);
+                output.println("Logged in: " + loggedIn.getUserId() + " (" + loggedIn.getRole() + ")");
+                break;
+            case "logout":
+                requireArguments(line.split("\\s+"), 1, "logout");
+                crobs.logout();
+                output.println("Logged out.");
+                break;
             case "quit":
                 requireArguments(line.split("\\s+"), 1, "quit");
                 output.println("Goodbye.");

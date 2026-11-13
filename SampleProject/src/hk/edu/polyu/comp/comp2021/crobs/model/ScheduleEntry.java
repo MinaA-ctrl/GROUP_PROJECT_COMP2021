@@ -3,7 +3,7 @@ package hk.edu.polyu.comp.comp2021.crobs.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/** Immutable schedule data with the owner's identity hidden when required. */
+/** An entry contains immutable schedule data with the owner's identity hidden when required. */
 public final class ScheduleEntry {
 
     private final String bookingId;

@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.BooleanSupplier;
 
-/** Stores bookings and enforces booking rules for one CROBS session. */
+/** Our booking manager stores bookings (wow) and enforces booking rules for one CROBS session. */
 public final class BookingManager {
 
     private final Map<String, Booking> bookings = new HashMap<>();
@@ -24,7 +24,7 @@ public final class BookingManager {
     private long nextBookingId = 1;
 
     /**
-     * Connects bookings to the group's session and room implementations.
+     * This connects bookings to the group's session and room implementations.
      * The supplier must return null when nobody is logged in. The predicate
      * must return true only for a room ID that currently exists.
      */
@@ -43,7 +43,7 @@ public final class BookingManager {
         this.currentUserIsAdmin = Objects.requireNonNull(currentUserIsAdmin, "currentUserIsAdmin");
     }
 
-    /** Creates a booking owned by the current user (REQ10). */
+    /** This creates a booking owned by the current user (REQ10). */
     public Booking book(String roomId, LocalDate date, LocalTime startTime,
                         LocalTime endTime, String purpose) {
         String ownerId = requireCurrentUser();
@@ -56,7 +56,7 @@ public final class BookingManager {
     }
 
     /**
-     * Modifies a booking owned by the current user (REQ11).
+     * This modifies a booking owned by the current user (REQ11).
      * A failed update leaves the stored booking unchanged.
      */
     public Booking modifyBooking(String bookingId, String roomId, LocalDate date,
@@ -69,14 +69,14 @@ public final class BookingManager {
         return copy(candidate);
     }
 
-    /** Deletes a booking owned by the current user (REQ12). */
+    /** This deletes a booking owned by the current user (REQ12). */
     public void deleteBooking(String bookingId) {
         Booking existing = requireOwnedBooking(bookingId);
         bookings.remove(existing.getBookingId());
     }
 
     /**
-     * Returns the current user's bookings sorted by date and start time (REQ17).
+     * This returns the current user's bookings sorted by date and start time (REQ17).
      * Returned bookings are copies, so editing them cannot bypass this manager.
      */
     public List<Booking> listBookings() {
@@ -94,7 +94,7 @@ public final class BookingManager {
     }
 
     /**
-     * Checks booking availability for a room search (REQ13). Capacity and
+     * This checks booking availability for a room search (REQ13). Capacity and
      * features are checked separately by the room implementation. Unknown
      * rooms and invalid intervals are rejected rather than reported as available.
      */
@@ -112,8 +112,8 @@ public final class BookingManager {
     }
 
     /**
-     * Returns the seven-day schedule starting on the supplied date (REQ14).
-     * Admins can see all owner IDs; other users see only their own owner ID.
+     * This returns the seven-day schedule starting on the supplied date (REQ14).
+     * Admins can see ALL owner IDs, but other users see only their own owner ID.
      * Results are immutable snapshots sorted by date, start time, and booking ID.
      */
     public List<ScheduleEntry> schedule(String roomId, LocalDate weekStartDate) {
@@ -139,7 +139,7 @@ public final class BookingManager {
 
     /**
      * Admin integration hook for removing a user (REQ3). Cancels all their
-     * bookings and returns the count. The user manager must validate that the
+     * bookings and returns the count. The user manager MUST validate that the
      * target is a removable regular user before calling this method.
      */
     public int cancelBookingsForUser(String userId) {
@@ -154,7 +154,7 @@ public final class BookingManager {
      * Admin integration hook for deleting a room (REQ9). Cancels bookings whose
      * start is at or after the cutoff, retaining past and ongoing bookings.
      * The caller supplies the current time once for the whole deletion.
-     * This also works after the room has been removed from the room collection.
+     * This also works after the room has been removed from the room collection!
      */
     public int cancelFutureBookingsForRoom(String roomId, LocalDateTime cutoff) {
         requireAdmin();

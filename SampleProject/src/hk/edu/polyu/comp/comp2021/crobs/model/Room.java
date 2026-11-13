@@ -30,7 +30,7 @@ public class Room {
 
     public String getRoomID() { return roomID; }
 
-    /** Updates one room field, preserving the original room ID. */
+    /** This updates one room field, preserving the original room ID. */
     void modifyField(String field, String newValue) {
         if (newValue == null) {
             throw new IllegalArgumentException("A new value is required");

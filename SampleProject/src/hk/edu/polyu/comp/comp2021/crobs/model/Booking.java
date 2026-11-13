@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
-/** Represents a room booking during one CROBS session. */
+/** This is a room booking during any one CROBS session. */
 public final class Booking {
 
     private final String bookingId;
@@ -15,7 +15,7 @@ public final class Booking {
     private LocalTime endTime;
     private String purpose;
 
-    /** Creates a booking. IDs are assigned by the booking manager. */
+    /** This creates a booking. The booking manager assigns IDs. */
     public Booking(String bookingId, String ownerUserId, String roomId,
                    LocalDate date, LocalTime startTime, LocalTime endTime,
                    String purpose) {
@@ -52,7 +52,7 @@ public final class Booking {
         return purpose;
     }
 
-    /** Changes editable details while preserving bookingId and ownerUserId. */
+    /** This changes editable details, but it preserves bookingId and ownerUserId. */
     public void updateDetails(String roomId, LocalDate date,
                               LocalTime startTime, LocalTime endTime,
                               String purpose) {

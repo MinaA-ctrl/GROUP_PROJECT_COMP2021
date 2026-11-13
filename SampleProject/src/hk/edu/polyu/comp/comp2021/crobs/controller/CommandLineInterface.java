@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** Reads and logs commands and dispatches operations to the model. */
+/** The CLI, of course, reads and logs commands and dispatches operations to the model. */
 public final class CommandLineInterface {
 
     private final BookingManager bookings;
@@ -31,7 +31,7 @@ public final class CommandLineInterface {
     }
 
     /**
-     * Runs until quit or end of input. Input and output remain caller-owned;
+     * The CLI runs until quit or end of input. Input and output remain caller-owned;
      * the application's try-with-resources closes the logger. Logging failures
      * stop the loop before the affected command is executed.
      */

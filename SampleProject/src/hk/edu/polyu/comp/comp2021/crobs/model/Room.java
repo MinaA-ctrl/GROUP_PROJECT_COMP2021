@@ -37,7 +37,11 @@ public class Room {
         }
         switch (field) {
             case "capacity":
-                capacity = checkCapacity(Integer.parseInt(newValue));
+                try {
+                    capacity = checkCapacity(Integer.parseInt(newValue));
+                } catch (NumberFormatException invalidNumber) {
+                    throw new IllegalArgumentException("Capacity must be an integer");
+                }
                 break;
             case "roomType":
                 roomType = RoomType.fromString(newValue);

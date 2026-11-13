@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-/** Writes one session's commands to the two files required by REQ1. */
+/** The logger writes one session's commands to the two files required by REQ1. */
 public final class OperationLogger implements Closeable {
 
     private final BufferedWriter htmlWriter;
@@ -18,8 +18,8 @@ public final class OperationLogger implements Closeable {
     private boolean failed;
 
     /**
-     * Creates UTF-8 logs, replacing any existing contents. Parent directories
-     * must already exist. The two paths must identify different files.
+     * This creates UTF-8 logs, replacing any existing contents. Parent directories
+     * MUST already exist. The two paths must identify different files.
      */
     public OperationLogger(Path htmlPath, Path textPath) throws IOException {
         Objects.requireNonNull(htmlPath, "htmlPath");

@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-/** Parses the required -html and -txt application arguments in either order. */
+/** The annoying process that parses the required -html and -txt application arguments in either order. */
 public final class LogFileOptions {
 
     private final Path htmlPath;

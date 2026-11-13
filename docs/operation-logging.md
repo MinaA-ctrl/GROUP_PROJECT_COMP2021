@@ -44,15 +44,12 @@ Try-with-resources closes both logs on quit, end of input, and exceptions.
 `Application` accepts the launch flags and runs the command loop. The current
 controller supports `book`, `modifyBooking`, `deleteBooking`, `listBookings`,
 `schedule`, `addRoom`, `modifyRoom`, `deleteRoom`, `listRoom`, `listAllRooms`,
-`search`, and `quit`. Dates use YYYY-MM-DD and times use HH:mm. A booking's
+`search`, `addUser`, `removeUser`, `changeRole`, `login`, `logout`, and
+`quit`. Dates use YYYY-MM-DD and times use HH:mm. A booking's
 purpose can contain spaces. Rejected commands are logged and the loop continues.
 
-The default `CROBS` still starts without a user/session implementation, so
-room and booking commands report that login is required. Login, logout, and
-user-management commands must still be connected. Do not treat
-this as a complete implementation of all project requirements. The injectable
-`CROBS(RoomList, Supplier<String>, BooleanSupplier)` constructor connects a real
-room collection and live session when the user manager is available.
+The default `CROBS` starts logged out and displays the initial superadmin ID
+(`sd00000000`). Log in before using room and booking commands.
 
 To try logging now, run `Application` in IntelliJ with Program arguments
 `-html session.html -txt session.txt`. Enter `listBookings`, an unknown command,
@@ -60,5 +57,5 @@ and `quit`; then inspect both generated files. Relative paths use the run
 configuration's working directory. Avoid committing generated session logs.
 
 Run `OperationLoggerTest`, `LogFileOptionsTest`, `CommandLineInterfaceTest`, and
-`ApplicationTest` with JUnit 5 in IntelliJ. The command tests supply a test session
-and exercise real room/booking objects; no test login bypass is shipped in the app.
+`ApplicationTest` with JUnit 5 in IntelliJ. The command tests exercise real
+logins, room and booking objects, and generated log files.

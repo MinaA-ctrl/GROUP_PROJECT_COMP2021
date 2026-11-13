@@ -2,7 +2,8 @@
 
 The booking model supports REQ10-12 and REQ17, availability checks for REQ13,
 the weekly schedule in REQ14, and cancellation hooks for REQ3 and REQ9.
-It still needs the real session, rooms, and command controller to be connected.
+The command controller reaches this model through `CROBS`, which connects
+bookings to the live user session and room collection.
 
 ## Create one manager per application session
 
@@ -14,18 +15,16 @@ Use the three-argument `BookingManager` constructor with:
 3. A `BooleanSupplier` that checks whether the current user is an admin or
    superadmin. Read this from the session's role, never from command input.
 
-For example, if the eventual class APIs provide these methods:
+In `CROBS`, the callbacks are:
 
 ```java
 BookingManager bookings = new BookingManager(
-        session::getCurrentUserId,
+        users::getCurrentUserId,
         rooms::containsRoom,
-        session::isCurrentUserAdmin);
+        users::isCurrentUserAdmin);
 ```
 
-`RoomList.containsRoom` is now implemented. The session method names remain
-proposals until the user manager is connected. `CROBS` now accepts the room
-collection and live session callbacks and creates the booking manager itself.
+`CROBS` creates one `UserManager` and one `BookingManager` per session.
 All callbacks must read current state rather than capturing a fixed login or role.
 The existing two-argument constructor remains usable, but grants no admin access.
 
@@ -80,6 +79,5 @@ The latter covers schedule boundaries and privacy, availability, deletion cutoff
 behavior, and authorization of cancellation hooks. Final verification should use
 the assignment's Java 25 SDK and language level 8.
 
-The CLI and HTML/TXT logging are now wired, including room commands and search.
-The room implementation is integrated through `CROBS`. User/session management
-and its CLI commands remain pending; the default application cannot log in yet.
+The default application starts logged out. Use `login sd00000000` to enter
+the startup superadmin account and create rooms and regular users.

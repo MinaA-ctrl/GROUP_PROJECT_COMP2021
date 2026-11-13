@@ -1,8 +1,8 @@
 # Room commands and search
 
-`CROBS` coordinates room operations and booking availability. Its injected
-current-user and admin callbacks must read the live user session. The default
-constructor still has no session until the user manager is connected.
+`CROBS` coordinates room operations and booking availability. It checks the
+active login and role through `UserManager`. The default application starts
+logged out; its initial superadmin can log in with `login sd00000000`.
 
 The command controller now takes a `CROBS` instance rather than a `BookingManager`.
 All room commands require login. Only admins and superadmins may add, modify,

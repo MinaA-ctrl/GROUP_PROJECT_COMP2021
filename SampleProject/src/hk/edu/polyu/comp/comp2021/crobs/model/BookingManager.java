@@ -27,6 +27,9 @@ public final class BookingManager {
      * This connects bookings to the group's session and room implementations.
      * The supplier must return null when nobody is logged in. The predicate
      * must return true only for a room ID that currently exists.
+     *
+     * @param currentUserId supplies the logged-in user's ID, or null
+     * @param roomExists tests whether a room ID exists
      */
     public BookingManager(Supplier<String> currentUserId, Predicate<String> roomExists) {
         this(currentUserId, roomExists, () -> false);
@@ -35,6 +38,10 @@ public final class BookingManager {
     /**
      * Also connects admin privileges to the current session. The admin supplier
      * must reflect the logged-in user's role, including the superadmin role.
+     *
+     * @param currentUserId supplies the logged-in user's ID, or null
+     * @param roomExists tests whether a room ID exists
+     * @param currentUserIsAdmin tells whether the logged-in user is an admin
      */
     public BookingManager(Supplier<String> currentUserId, Predicate<String> roomExists,
                           BooleanSupplier currentUserIsAdmin) {
@@ -43,7 +50,18 @@ public final class BookingManager {
         this.currentUserIsAdmin = Objects.requireNonNull(currentUserIsAdmin, "currentUserIsAdmin");
     }
 
-    /** This creates a booking owned by the current user (REQ10). */
+    /**
+     * This creates a booking owned by the current user (REQ10).
+     *
+     * @param roomId the room to book
+     * @param date the date of the booking
+     * @param startTime the start time
+     * @param endTime the end time
+     * @param purpose the purpose of the booking
+     * @return a copy of the new booking
+     * @throws IllegalStateException if nobody is logged in
+     * @throws IllegalArgumentException if the room is unknown, the values are invalid or the slot is taken
+     */
     public Booking book(String roomId, LocalDate date, LocalTime startTime,
                         LocalTime endTime, String purpose) {
         String ownerId = requireCurrentUser();
@@ -58,6 +76,16 @@ public final class BookingManager {
     /**
      * This modifies a booking owned by the current user (REQ11).
      * A failed update leaves the stored booking unchanged.
+     *
+     * @param bookingId the booking to modify
+     * @param roomId the new room
+     * @param date the new date
+     * @param startTime the new start time
+     * @param endTime the new end time
+     * @param purpose the new purpose
+     * @return a copy of the modified booking
+     * @throws IllegalStateException if nobody is logged in or the booking belongs to another user
+     * @throws IllegalArgumentException if the booking or room is unknown, a value is invalid or the slot is taken
      */
     public Booking modifyBooking(String bookingId, String roomId, LocalDate date,
                                  LocalTime startTime, LocalTime endTime, String purpose) {
@@ -69,7 +97,13 @@ public final class BookingManager {
         return copy(candidate);
     }
 
-    /** This deletes a booking owned by the current user (REQ12). */
+    /**
+     * This deletes a booking owned by the current user (REQ12).
+     *
+     * @param bookingId the booking to delete
+     * @throws IllegalStateException if nobody is logged in or the booking belongs to another user
+     * @throws IllegalArgumentException if the booking is unknown
+     */
     public void deleteBooking(String bookingId) {
         Booking existing = requireOwnedBooking(bookingId);
         bookings.remove(existing.getBookingId());
@@ -78,6 +112,9 @@ public final class BookingManager {
     /**
      * This returns the current user's bookings sorted by date and start time (REQ17).
      * Returned bookings are copies, so editing them cannot bypass this manager.
+     *
+     * @return the current user's bookings
+     * @throws IllegalStateException if nobody is logged in
      */
     public List<Booking> listBookings() {
         String ownerId = requireCurrentUser();
@@ -97,6 +134,14 @@ public final class BookingManager {
      * This checks booking availability for a room search (REQ13). Capacity and
      * features are checked separately by the room implementation. Unknown
      * rooms and invalid intervals are rejected rather than reported as available.
+     *
+     * @param roomId the room to check
+     * @param date the date
+     * @param startTime the start time
+     * @param endTime the end time
+     * @return true if no booking of the room overlaps the interval
+     * @throws IllegalStateException if nobody is logged in
+     * @throws IllegalArgumentException if the room is unknown or the interval is invalid
      */
     public boolean isRoomAvailable(String roomId, LocalDate date,
                                    LocalTime startTime, LocalTime endTime) {
@@ -115,6 +160,12 @@ public final class BookingManager {
      * This returns the seven-day schedule starting on the supplied date (REQ14).
      * Admins can see ALL owner IDs, but other users see only their own owner ID.
      * Results are immutable snapshots sorted by date, start time, and booking ID.
+     *
+     * @param roomId the room whose schedule is shown
+     * @param weekStartDate the first day of the seven-day period
+     * @return the bookings of the room in that period
+     * @throws IllegalStateException if nobody is logged in
+     * @throws IllegalArgumentException if the room is unknown
      */
     public List<ScheduleEntry> schedule(String roomId, LocalDate weekStartDate) {
         String viewerId = requireCurrentUser();
@@ -141,6 +192,10 @@ public final class BookingManager {
      * Admin integration hook for removing a user (REQ3). Cancels all their
      * bookings and returns the count. The user manager MUST validate that the
      * target is a removable regular user before calling this method.
+     *
+     * @param userId the user whose bookings are cancelled
+     * @return the number of cancelled bookings
+     * @throws IllegalStateException if the current user is not an admin
      */
     public int cancelBookingsForUser(String userId) {
         requireAdmin();
@@ -155,6 +210,11 @@ public final class BookingManager {
      * start is at or after the cutoff, retaining past and ongoing bookings.
      * The caller supplies the current time once for the whole deletion.
      * This also works after the room has been removed from the room collection!
+     *
+     * @param roomId the deleted room
+     * @param cutoff bookings starting at or after this time are cancelled
+     * @return the number of cancelled bookings
+     * @throws IllegalStateException if the current user is not an admin
      */
     public int cancelFutureBookingsForRoom(String roomId, LocalDateTime cutoff) {
         requireAdmin();
@@ -164,6 +224,32 @@ public final class BookingManager {
         bookings.values().removeIf(booking -> booking.getRoomId().equals(roomId)
                 && !booking.getDate().atTime(booking.getStartTime()).isBefore(cutoff));
         return previousSize - bookings.size();
+    }
+
+    /**
+     * Copies every booking for an undo snapshot. The booking ID counter is not part of
+     * the snapshot, so booking IDs are never reused after an undo.
+     *
+     * @return a new map from booking ID to an independent copy of the booking
+     */
+    Map<String, Booking> copyBookings() {
+        Map<String, Booking> copies = new HashMap<>();
+        for (Booking booking : bookings.values()) {
+            copies.put(booking.getBookingId(), copy(booking));
+        }
+        return copies;
+    }
+
+    /**
+     * Replaces all bookings with copies of saved ones.
+     *
+     * @param savedBookings the bookings to restore
+     */
+    void restoreBookings(Map<String, Booking> savedBookings) {
+        bookings.clear();
+        for (Booking booking : savedBookings.values()) {
+            bookings.put(booking.getBookingId(), copy(booking));
+        }
     }
 
     private void requireAdmin() {

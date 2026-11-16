@@ -20,6 +20,10 @@ public final class OperationLogger implements Closeable {
     /**
      * This creates UTF-8 logs, replacing any existing contents. Parent directories
      * MUST already exist. The two paths must identify different files.
+     *
+     * @param htmlPath the HTML log file
+     * @param textPath the plain-text log file
+     * @throws IOException if a log file cannot be created
      */
     public OperationLogger(Path htmlPath, Path textPath) throws IOException {
         Objects.requireNonNull(htmlPath, "htmlPath");
@@ -63,6 +67,9 @@ public final class OperationLogger implements Closeable {
      * Records one raw command line, including its original whitespace.
      * Call once before dispatch so invalid commands and quit are recorded too.
      * Each successful call flushes both files immediately.
+     *
+     * @param command the command line exactly as typed
+     * @throws IOException if the logger is closed or writing fails
      */
     public void log(String command) throws IOException {
         if (closed || failed) {
@@ -86,7 +93,11 @@ public final class OperationLogger implements Closeable {
         }
     }
 
-    /** Completes the HTML document and attempts to close both files. */
+    /**
+     * Completes the HTML document and attempts to close both files.
+     *
+     * @throws IOException if writing or closing a file fails
+     */
     @Override
     public void close() throws IOException {
         if (closed) {

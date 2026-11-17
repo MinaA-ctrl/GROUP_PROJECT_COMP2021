@@ -309,9 +309,20 @@ public final class CrobsWindow {
             close();
             return;
         }
+
         StringWriter buffer = new StringWriter();
         PrintWriter output = new PrintWriter(buffer);
+        String previousUserId = crobs.getCurrentUser().map(User::getUserId).orElse(null);
+
         boolean keepRunning = processor.execute(command, output);
+
+        String currentUserId = crobs.getCurrentUser().map(User::getUserId).orElse(null);
+        if (!java.util.Objects.equals(previousUserId, currentUserId)) {
+            console.setText("");
+            scheduleRows.setRowCount(0);
+            searchRows.setRowCount(0);
+        }
+
         console.append("crobs> " + command + "\n" + buffer);
         console.setCaretPosition(console.getDocument().getLength());
         refresh();

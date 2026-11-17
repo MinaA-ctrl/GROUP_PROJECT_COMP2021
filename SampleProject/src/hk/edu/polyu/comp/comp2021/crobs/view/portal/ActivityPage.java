@@ -6,9 +6,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import hk.edu.polyu.comp.comp2021.crobs.model.User;
 
 /**
- * The session activity: every command run by the portal with Crobs' answer, the same text the
+ * The session activity for current login: every command run by the portal with Crobs' answer, the same text the
  * command-line interface prints. Any CLI command can also be typed here.
  */
 final class ActivityPage extends PortalPage {
@@ -17,6 +18,8 @@ final class ActivityPage extends PortalPage {
 
     private final JTextArea transcript = new JTextArea();
     private final JTextField command = new JTextField();
+
+    private String displayedUserId;
 
     /**
      * Creates the activity page and starts recording the session's commands.
@@ -33,6 +36,11 @@ final class ActivityPage extends PortalPage {
         command.setFont(PortalTheme.monoFont());
         command.addActionListener(event -> runTyped());
         session.addListener(result -> {
+            String currentUserId = session.model().getCurrentUser().map(User::getUserId).orElse(null);
+            if (!java.util.Objects.equals(displayedUserId, currentUserId)) {
+                transcript.setText("");
+                displayedUserId = currentUserId;
+            }
             transcript.append("crobs> " + result.getCommand() + "\n" + result.getOutput() + "\n");
             transcript.setCaretPosition(transcript.getDocument().getLength());
         });
